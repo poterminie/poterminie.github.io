@@ -1,4 +1,4 @@
-# PoTerminie — start here
+# PoTerminie - start here
 
 A Polish-language tool site for businesses chasing late invoices. It calculates late-payment
 interest and the statutory 40/70/100 EUR compensation at the correct NBP exchange rate, and
@@ -7,7 +7,7 @@ generates the demand letter and accounting notes. Goal: cover a Claude Pro subsc
 
 **State (10 November 2026):** the site is **live** at
 <https://poterminie.github.io/> and maintains itself. **Pro is on sale via Naffy; no sale yet, and nothing else is
-connected yet** — that needs a payment account only you can create.
+connected yet** - that needs a payment account only you can create.
 
 ---
 
@@ -16,12 +16,12 @@ connected yet** — that needs a payment account only you can create.
 | | |
 |---|---|
 | Calculator | Commercial, statutory (Civil Code) and contractual interest; 40/70/100 EUR compensation; partial payments; weekend/holiday due-date shift (art. 115 KC) |
-| Documents | Demand letter (free), interest note and compensation debit note (Pro) — editable preview, print/PDF, Word export |
+| Documents | Demand letter (free), interest note and compensation debit note (Pro) - editable preview, print/PDF, Word export |
 | Content | 116 pages: one per month since 2020 ("rekompensata 40 euro listopad 2026"), one per half-year of interest rates, yearly tables, guides, legal pages |
 | Data | Live from NBP: reference-rate history and 132 month-end EUR rates |
 | Tests | 66 checks, including that the holiday calendar matches every NBP publication date since 2015 |
 | Automation | GitHub Actions: every working day fetches NBP data, runs the tests, rebuilds, publishes, pings search engines. New month → new page appears by itself |
-| Monetisation hooks | Pro unlock (one-time code), tip button, affiliate cards, optional AdSense — each switches on when you paste one link |
+| Monetisation hooks | Pro unlock (one-time code), tip button, affiliate cards, optional AdSense - each switches on when you paste one link |
 
 Running cost: **0 PLN**. No server, no database, no dependencies.
 
@@ -68,18 +68,18 @@ picks it up automatically (then update `siteUrl` in `site.config.json` and re-ru
 
 Open `site.config.json`. Any one of these is enough to start; all three can run together.
 
-**a) Tips — fastest.** Create a profile on a tipping service (in Poland e.g. buycoffee.to, which
-takes BLIK; reported fee about 10% in total — check their current price list). Paste the profile
+**a) Tips - fastest.** Create a profile on a tipping service (in Poland e.g. buycoffee.to, which
+takes BLIK; reported fee about 10% in total - check their current price list). Paste the profile
 link into `support.url`. The button appears under every result.
 
-**b) Pro unlock — best income per visitor.** I already generated a unique activation code; only
+**b) Pro unlock - best income per visitor.** I already generated a unique activation code; only
 its fingerprint is in the config.
 1. Sign up at naffy.io (free; it accepts sellers without a registered business, takes 6% per
-   sale, and pays out through a Stripe account you connect — choose "Sole Proprietor (Osoba
+   sale, and pays out through a Stripe account you connect - choose "Sole Proprietor (Osoba
    fizyczna)" there). Turn on BLIK.
 2. Add a digital product using the ready files in `private/sprzedaz/`:
    `opis-produktu.txt` (title, price, descriptions to paste), `okladka-pro.png` (cover) and
-   `PoTerminie-Pro-kod-aktywacyjny.pdf` (the file buyers receive — it contains the code).
+   `PoTerminie-Pro-kod-aktywacyjny.pdf` (the file buyers receive - it contains the code).
 3. Paste the product's link into `pro.checkoutUrl`, commit and push.
 
 Regenerate those files any time with `node scripts/make-sales-kit.mjs` (needed after changing
@@ -102,7 +102,7 @@ Also fill in `owner.name` and `owner.email`. Polish law requires a site that off
 identify who runs it; they appear on the contact and terms pages. A dedicated mailbox is a good
 idea, since the address becomes public.
 
-Commit and push after editing the config — the site republishes itself.
+Commit and push after editing the config - the site republishes itself.
 
 ### 2. Tell Google the site exists (10 min)
 
@@ -111,7 +111,7 @@ Commit and push after editing the config — the site republishes itself.
 3. Click Verify, then Sitemaps → submit `sitemap.xml`.
 
 Bing, and the search engines that use Bing's index, are notified automatically after every
-deploy (IndexNow) — the first submission of all 114 pages was accepted on launch day.
+deploy (IndexNow) - the first submission of all 114 pages was accepted on launch day.
 
 ---
 
@@ -122,12 +122,12 @@ Target: **89 PLN/month**.
 | Source | Per event (after ~10% fees) | Needed per month |
 |---|---|---|
 | Pro unlock, 29 PLN | about 26 PLN | **4 sales** |
-| Tip, typically 10–15 PLN | about 9–13 PLN | 7–10 tips |
-| Affiliate lead | set by the programme — unverified | possibly 1–2 |
+| Tip, typically 10-15 PLN | about 9-13 PLN | 7-10 tips |
+| Affiliate lead | set by the programme - unverified | possibly 1-2 |
 
 Assumptions for Pro (mine, not measured): 40% of visitors enter an invoice, 10% of those want a
-Pro feature (a note, a 4th invoice, Word export), 10–15% of those pay. That is roughly
-0.4–0.6% of visitors, so **about 700–1,000 visits a month (25–35 a day)** covers the
+Pro feature (a note, a 4th invoice, Word export), 10-15% of those pay. That is roughly
+0.4-0.6% of visitors, so **about 700-1,000 visits a month (25-35 a day)** covers the
 subscription from Pro alone; tips and affiliate links lower that number.
 
 Why a buyer pays: one overdue invoice entitles them to at least 175.82 PLN compensation this
@@ -139,7 +139,7 @@ repeat every month ("rekompensata 40 euro kurs listopad 2026"), 14 half-year pag
 and template searches. The site adds the next page on its own the day NBP publishes the rate.
 
 **What I cannot promise:** traffic. A new site typically sees almost nothing for the first
-4–8 weeks and grows slowly after that, and the main keywords have established competitors
+4-8 weeks and grows slowly after that, and the main keywords have established competitors
 (accounting portals, invoicing software). It may reach the target in a few months, later, or
 not at all. The build keeps the downside at zero cost; it does not guarantee the upside.
 
@@ -152,7 +152,7 @@ bookkeepers ask about late payers (Facebook groups for księgowi / freelancerzy,
 ## Tax, briefly (Poland)
 
 - Income this small fits **działalność nierejestrowana**: no company and no ZUS while revenue
-  stays under 225% of the minimum wage **per quarter** — 10,813.50 PLN in 2026; 11,137.50 PLN in
+  stays under 225% of the minimum wage **per quarter** - 10,813.50 PLN in 2026; 11,137.50 PLN in
   2027 if the announced 4,950 PLN minimum wage is confirmed. 89 PLN a month is about 2.5% of that.
 - You report it once a year in **PIT-36** and keep a simple list of sales.
 - Tips: the tax office and the courts have disagreed on whether they are gifts or income.
@@ -161,7 +161,7 @@ bookkeepers ask about late payers (Facebook groups for księgowi / freelancerzy,
   **VAT-UE** registration even without a business. A Polish platform avoids the question;
   otherwise ask an accountant before switching AdSense on.
 
-This is orientation, not tax advice — confirm your own case with an accountant or the KIS helpline.
+This is orientation, not tax advice - confirm your own case with an accountant or the KIS helpline.
 
 ---
 

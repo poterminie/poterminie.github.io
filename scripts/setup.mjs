@@ -14,7 +14,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CFG = path.join(ROOT, 'site.config.json');
 const PRIV = path.join(ROOT, 'private');
 const SALT = 'poterminie:';
-const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';        // bez 0/O/1/I/L – łatwiej przepisać
+const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';        // bez 0/O/1/I/L - łatwiej przepisać
 
 const cfg = JSON.parse(await readFile(CFG, 'utf8'));
 cfg.pro ||= {};
@@ -28,13 +28,13 @@ let code = null;
 try { code = (await readFile(path.join(PRIV, 'kod-pro.txt'), 'utf8')).trim(); } catch { /* brak */ }
 const forceNew = process.argv.includes('--new-code');
 if (forceNew || !code || hashOf(code) !== cfg.pro.codeHash) {
-  if (!forceNew && code && cfg.pro.codeHash) console.warn('! Kod w private/kod-pro.txt nie pasuje do skrótu w konfiguracji — generuję nowy.');
+  if (!forceNew && code && cfg.pro.codeHash) console.warn('! Kod w private/kod-pro.txt nie pasuje do skrótu w konfiguracji - generuję nowy.');
   code = `PT-${group()}-${group()}-${group()}`;
   cfg.pro.codeHash = hashOf(code);
   await writeFile(path.join(PRIV, 'kod-pro.txt'), code + '\n');
   console.log('Wygenerowano nowy kod Pro (private/kod-pro.txt).');
 } else {
-  console.log('Kod Pro już istnieje — bez zmian.');
+  console.log('Kod Pro już istnieje - bez zmian.');
 }
 if (!cfg.indexNowKey) { cfg.indexNowKey = randomBytes(16).toString('hex'); console.log('Wygenerowano klucz IndexNow.'); }
 await writeFile(CFG, JSON.stringify(cfg, null, 2) + '\n');
@@ -48,7 +48,7 @@ Jak aktywować:
 1. Wejdź na ${site}/pro/
 2. Wpisz kod i kliknij „Aktywuj”.
 
-Albo po prostu otwórz ten link — aktywuje Pro automatycznie:
+Albo po prostu otwórz ten link - aktywuje Pro automatycznie:
 ${site}/pro/?kod=${code}
 
 Kod działa bezterminowo. Możesz go użyć ponownie na innym swoim urządzeniu

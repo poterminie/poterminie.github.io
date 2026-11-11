@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Testy silnika obliczeń. Uruchamiane lokalnie i w GitHub Actions przed każdym wdrożeniem –
+// Testy silnika obliczeń. Uruchamiane lokalnie i w GitHub Actions przed każdym wdrożeniem -
 // jeśli dane NBP albo logika się rozjadą, wdrożenie zostaje zatrzymane i działa poprzednia wersja strony.
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';

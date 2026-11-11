@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Materiały do sprzedaży dostępu Pro (np. na naffy.io) -> private/sprzedaz/
 //   PoTerminie-Pro-kod-aktywacyjny.pdf   plik, który kupujący dostaje po płatności (zawiera kod!)
-//   okladka-pro.png                      grafika produktu 1080x1080 (tylko Windows – rysuje ją PowerShell)
+//   okladka-pro.png                      grafika produktu 1080x1080 (tylko Windows - rysuje ją PowerShell)
 //   opis-produktu.txt                    teksty do wklejenia w formularzu produktu
 // PDF powstaje bez żadnych zależności: skrypt sam składa plik i osadza w nim czcionkę Verdana z systemu.
 // Uruchom ponownie po zmianie kodu (setup.mjs --new-code), ceny lub adresu strony.
@@ -27,7 +27,7 @@ const contact = cfg.owner?.email || '';
 if (!site) { console.error('Najpierw ustaw "siteUrl" w site.config.json.'); process.exit(1); }
 let code;
 try { code = (await readFile(path.join(PRIV, 'kod-pro.txt'), 'utf8')).trim(); }
-catch { console.error('Brak private/kod-pro.txt — uruchom najpierw: node scripts/setup.mjs'); process.exit(1); }
+catch { console.error('Brak private/kod-pro.txt - uruchom najpierw: node scripts/setup.mjs'); process.exit(1); }
 const host = site.replace(/^https?:\/\//, '');
 await mkdir(OUT, { recursive: true });
 
@@ -122,7 +122,7 @@ function buildPdf(theCode) {
   text(bx + 5, ly + 20, 'Pro', B, 15, INK);
 
   text(M, 150, 'Dziękujemy za zakup!', B, 27, INK);
-  let y = para(M, 179, `To Twój kod aktywacyjny do pełnej wersji kalkulatora ${name}. Zachowaj ten plik — kod działa bezterminowo.`, R, 11.5, MUTED, 440, 17.5);
+  let y = para(M, 179, `To Twój kod aktywacyjny do pełnej wersji kalkulatora ${name}. Zachowaj ten plik - kod działa bezterminowo.`, R, 11.5, MUTED, 440, 17.5);
 
   const boxTop = y + 12, boxH = 172;
   rr(M, boxTop, CW, boxH, 10, { fill: SOFT, stroke: ACC, lw: 1.2 });
@@ -140,7 +140,7 @@ function buildPdf(theCode) {
   text(M, cy, 'Jak aktywować', B, 12, INK);
   text(x2, cy, 'Co odblokowuje Pro', B, 12, INK);
   const yL = list(M, cy + 21, colW, [
-    'Kliknij zielony przycisk powyżej — Pro włączy się automatycznie.',
+    'Kliknij zielony przycisk powyżej - Pro włączy się automatycznie.',
     `Albo wejdź na ${host}/pro/, wpisz kod i kliknij „Aktywuj”.`,
     'Gotowe. Funkcje Pro są dostępne od razu w kalkulatorze.'
   ], true);
@@ -154,12 +154,12 @@ function buildPdf(theCode) {
   text(M, y, 'Dobrze wiedzieć', B, 12, INK);
   list(M, y + 21, CW, [
     'Aktywacja zapisuje się w przeglądarce. Na innym urządzeniu lub po wyczyszczeniu danych przeglądarki wpisz kod ponownie.',
-    'Kod jest przeznaczony dla Ciebie i Twojej firmy — prosimy nie udostępniać go dalej.',
+    'Kod jest przeznaczony dla Ciebie i Twojej firmy - prosimy nie udostępniać go dalej.',
     'Dane wpisywane w kalkulatorze nie opuszczają Twojej przeglądarki.'
   ], false);
 
   c.push('q', `${rgb(LINE)} RG 0.75 w`, `${f(M)} ${f(52)} m ${f(W - M)} ${f(52)} l S`, 'Q');
-  text(M, H - 38, `${name} — kalkulator odsetek za opóźnienie i rekompensaty 40 euro`, R, 7.5, MUTED);
+  text(M, H - 38, `${name} - kalkulator odsetek za opóźnienie i rekompensaty 40 euro`, R, 7.5, MUTED);
   text(W - M, H - 38, contact ? `Kontakt: ${contact}` : host, R, 7.5, MUTED, { align: 'right' });
   if (contact) text(M, H - 27, host, R, 7.5, MUTED);
 
@@ -185,7 +185,7 @@ function buildPdf(theCode) {
   add(`/Type /Pages /Kids [${page} 0 R] /Count 1`);
   const catalog = add(`/Type /Catalog /Pages ${pagesId} 0 R /Lang (pl-PL)`);
   const u16 = (s) => { let hx = 'FEFF'; for (const ch of s) hx += ch.codePointAt(0).toString(16).padStart(4, '0'); return `<${hx.toUpperCase()}>`; };
-  const info = add(`/Title ${u16(`${name} Pro — kod aktywacyjny`)} /Producer (PoTerminie sales kit)`);
+  const info = add(`/Title ${u16(`${name} Pro - kod aktywacyjny`)} /Producer (PoTerminie sales kit)`);
 
   const chunks = [Buffer.from('%PDF-1.7\n%\xE2\xE3\xCF\xD3\n', 'latin1')], offs = [];
   let pos = chunks[0].length;
@@ -220,7 +220,7 @@ if (process.platform === 'win32') {
   for (const exe of ['pwsh', 'powershell']) {
     try { await run(exe, args, { timeout: 60000 }); ok = true; break; } catch { /* spróbuj kolejnego */ }
   }
-  console.log(ok ? `Okładka produktu:     private/sprzedaz/${path.basename(png)} (${await kb(png)})` : 'Okładki nie udało się wygenerować (PowerShell niedostępny) — użyj własnej grafiki 1080x1080.');
+  console.log(ok ? `Okładka produktu:     private/sprzedaz/${path.basename(png)} (${await kb(png)})` : 'Okładki nie udało się wygenerować (PowerShell niedostępny) - użyj własnej grafiki 1080x1080.');
   // obraz 1200x630 do pola „Social image" (podgląd linku w wyszukiwarce i mediach społecznościowych)
   const social = path.join(OUT, 'social-1200x630.png');
   const sArgs = ['-NoProfile', '-File', path.join(ROOT, 'scripts', 'social.ps1'), '-Out', social, '-Name', name, '-Price', price,
@@ -229,16 +229,16 @@ if (process.platform === 'win32') {
     try { await run(exe, sArgs, { timeout: 60000 }); console.log(`Obraz do udostępnień: private/sprzedaz/${path.basename(social)} (${await kb(social)})`); break; } catch { /* spróbuj kolejnego */ }
   }
 } else {
-  console.log('Okładka produktu: generowana tylko na Windows — użyj własnej grafiki 1080x1080.');
+  console.log('Okładka produktu: generowana tylko na Windows - użyj własnej grafiki 1080x1080.');
 }
 
 /* ================= teksty do formularza produktu ================= */
-await writeFile(path.join(OUT, 'opis-produktu.txt'), `MATERIAŁY DO SPRZEDAŻY — ${name} Pro
+await writeFile(path.join(OUT, 'opis-produktu.txt'), `MATERIAŁY DO SPRZEDAŻY - ${name} Pro
 (wklej do formularza produktu, np. na naffy.io)
 =====================================================================
 
 NAZWA PRODUKTU
-${name} Pro — nota odsetkowa i nota na rekompensatę 40 euro
+${name} Pro - nota odsetkowa i nota na rekompensatę 40 euro
 
 CENA
 ${price} (jednorazowo)
@@ -256,11 +256,11 @@ KRÓTKI OPIS
 Kod odblokowujący pełną wersję kalkulatora ${name}. Komplet dokumentów do odzyskania odsetek i rekompensaty 40, 70 lub 100 euro za faktury zapłacone po terminie.
 
 OPIS
-Kontrahent zapłacił fakturę po terminie albo wciąż zalega? Od każdej takiej faktury należą Ci się odsetki za opóźnienie i rekompensata 40, 70 lub 100 euro — z mocy prawa, bez wezwania. ${name} Pro przygotuje dokumenty, którymi odzyskasz te pieniądze.
+Kontrahent zapłacił fakturę po terminie albo wciąż zalega? Od każdej takiej faktury należą Ci się odsetki za opóźnienie i rekompensata 40, 70 lub 100 euro - z mocy prawa, bez wezwania. ${name} Pro przygotuje dokumenty, którymi odzyskasz te pieniądze.
 
 Co dostajesz:
 • Notę odsetkową z tabelą okresów, stawek i dni opóźnienia
-• Notę obciążeniową na rekompensatę 40/70/100 euro — z właściwym kursem NBP i numerem tabeli
+• Notę obciążeniową na rekompensatę 40/70/100 euro - z właściwym kursem NBP i numerem tabeli
 • Dowolną liczbę faktur w jednej sprawie (w wersji bezpłatnej: ${freeInv}) i wklejanie listy prosto z arkusza
 • Eksport dokumentów do Worda (.doc) i dokumenty bez stopki serwisu
 
@@ -271,9 +271,9 @@ Jak to działa:
 
 Ważne:
 • Płatność jednorazowa, bez abonamentu. Kod działa bezterminowo.
-• Nic nie instalujesz — kalkulator działa w przeglądarce, a wpisane dane nie opuszczają Twojego urządzenia.
+• Nic nie instalujesz - kalkulator działa w przeglądarce, a wpisane dane nie opuszczają Twojego urządzenia.
 • Stawki odsetek i kursy euro aktualizują się automatycznie na podstawie danych NBP.
-• Kalkulator i wezwanie do zapłaty są bezpłatne — możesz je sprawdzić przed zakupem.
+• Kalkulator i wezwanie do zapłaty są bezpłatne - możesz je sprawdzić przed zakupem.
 
 Dla kogo: przedsiębiorcy, freelancerzy B2B, biura rachunkowe i działy księgowości, które rozliczają opóźnione płatności.
 

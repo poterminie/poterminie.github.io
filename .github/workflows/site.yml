@@ -6,8 +6,8 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '40 13 * * 1-5'   # dni robocze 13:40 UTC — po publikacji tabeli A przez NBP (ok. 12:15 czasu polskiego)
-    - cron: '10 5 1 * *'      # 1. dnia miesiąca — odświeżenie „bieżącego miesiąca” nawet bez zmian w danych
+    - cron: '40 13 * * 1-5'   # dni robocze 13:40 UTC - po publikacji tabeli A przez NBP (ok. 12:15 czasu polskiego)
+    - cron: '10 5 1 * *'      # 1. dnia miesiąca - odświeżenie „bieżącego miesiąca” nawet bez zmian w danych
   workflow_dispatch:
 
 permissions:
@@ -53,7 +53,7 @@ jobs:
       - name: Czy publikować
         id: decide
         run: |
-          # Hosting poza GitHub Pages (np. Cloudflare Pages)? Ustaw zmienną repozytorium GH_PAGES=off —
+          # Hosting poza GitHub Pages (np. Cloudflare Pages)? Ustaw zmienną repozytorium GH_PAGES=off -
           # workflow będzie wtedy tylko odświeżał dane, a stronę zbuduje Twój hosting po każdym commicie.
           if [ "${{ vars.GH_PAGES }}" = "off" ]; then
             echo "deploy=false" >> "$GITHUB_OUTPUT"

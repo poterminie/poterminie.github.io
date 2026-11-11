@@ -10,10 +10,10 @@ try {
   const cfg = JSON.parse(await readFile(path.join(ROOT, 'site.config.json'), 'utf8'));
   const site = String(process.env.SITE_URL || cfg.siteUrl || '').replace(/\/+$/, '');
   const key = cfg.indexNowKey;
-  if (!site || !key) { console.log('IndexNow: brak adresu strony lub klucza — pomijam.'); process.exit(0); }
+  if (!site || !key) { console.log('IndexNow: brak adresu strony lub klucza - pomijam.'); process.exit(0); }
   const xml = await readFile(path.join(ROOT, 'dist/sitemap.xml'), 'utf8');
   const urlList = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]).filter((x) => x.startsWith(site));
-  if (!urlList.length) { console.log('IndexNow: pusta mapa strony — pomijam.'); process.exit(0); }
+  if (!urlList.length) { console.log('IndexNow: pusta mapa strony - pomijam.'); process.exit(0); }
   const r = await fetch('https://api.indexnow.org/indexnow', {
     method: 'POST', headers: { 'Content-Type': 'application/json; charset=utf-8' },
     body: JSON.stringify({ host: new URL(site).host, key, keyLocation: `${site}/${key}.txt`, urlList }),
@@ -21,5 +21,5 @@ try {
   });
   console.log(`IndexNow: zgłoszono ${urlList.length} adresów, odpowiedź HTTP ${r.status}.`);
 } catch (e) {
-  console.log('IndexNow: nie udało się zgłosić adresów —', e.message);
+  console.log('IndexNow: nie udało się zgłosić adresów -', e.message);
 }

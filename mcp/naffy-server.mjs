@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // MCP server (stdio, zero dependencies) that lets Claude read the public Naffy listing for PoTerminie Pro
 // and cross-check it against the live site. Naffy has no public API, so this is read-only:
-// it cannot edit the listing or see sales — those live in the Naffy and Stripe dashboards.
+// it cannot edit the listing or see sales - those live in the Naffy and Stripe dashboards.
 //
 // Product/store address: private/naffy.json  { "productUrl": "https://www.naffy.io/<store>/<product>" }
 // (kept in private/ so it never lands in the public repository), or pass `url` to a tool.

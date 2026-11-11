@@ -1,4 +1,4 @@
-/*! PoTerminie – silnik obliczeń: odsetki za opóźnienie i rekompensata 40/70/100 EUR.
+/*! PoTerminie - silnik obliczeń: odsetki za opóźnienie i rekompensata 40/70/100 EUR.
  *  Jeden plik dla przeglądarki (window.PTCalc) i Node (globalThis.PTCalc). Daty jako 'RRRR-MM-DD'. */
 (function (root) {
   'use strict';
@@ -62,7 +62,7 @@
     var set = {}, e = easterDate(y);
     function add(m, d) { set[y + '-' + pad(m) + '-' + pad(d)] = 1; }
     add(1, 1); add(1, 6); add(5, 1); add(5, 3); add(8, 15); add(11, 1); add(11, 11); add(12, 25); add(12, 26);
-    if (y >= 2025) add(12, 24);          // Wigilia – dzień wolny od 2025 r.
+    if (y >= 2025) add(12, 24);          // Wigilia - dzień wolny od 2025 r.
     if (y === 2018) add(11, 12);         // jednorazowe święto 12.11.2018
     [0, 1, 49, 60].forEach(function (off) { set[iso(new Date(e.getTime() + off * DAY))] = 1; }); // Wielkanoc, pon. wielkanocny, Zielone Świątki, Boże Ciało
     holCache[y] = set;
@@ -266,7 +266,7 @@
       } else {
         out.delayEnd = end;
       }
-      if (out.shifted) out.notes.push('Termin płatności ' + fmtDate(due) + ' (' + WD[weekday(due)] + (isHoliday(due) && weekday(due) % 6 !== 0 ? ', dzień wolny' : '') + ') przesunięto na ' + fmtDate(dueAdj) + ' – art. 115 KC.');
+      if (out.shifted) out.notes.push('Termin płatności ' + fmtDate(due) + ' (' + WD[weekday(due)] + (isHoliday(due) && weekday(due) % 6 !== 0 ? ', dzień wolny' : '') + ') przesunięto na ' + fmtDate(dueAdj) + ' - art. 115 KC.');
       if (out.capped) out.notes.push('Stopę umowną ograniczono do odsetek maksymalnych za opóźnienie (art. 481 § 2¹ KC).');
 
       var typeDef = TYPES[opt.rateType] || TYPES.handlowe;

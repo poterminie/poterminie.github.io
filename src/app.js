@@ -1,4 +1,4 @@
-/*! PoTerminie – interfejs kalkulatora i generator dokumentów. Wszystko liczone lokalnie w przeglądarce. */
+/*! PoTerminie - interfejs kalkulatora i generator dokumentów. Wszystko liczone lokalnie w przeglądarce. */
 (function () {
   'use strict';
   var C = window.PTCalc, DATA = window.PT_DATA, CFG = window.PT_CFG || {};
@@ -95,7 +95,7 @@
   }
   function openPro(reason) {
     var buy = PRO.checkoutUrl
-      ? '<a class="btn btn-primary btn-lg" data-focus href="' + esc(PRO.checkoutUrl) + '" target="_blank" rel="noopener">Kup dostęp Pro — ' + esc(PRO.priceLabel) + '</a>' +
+      ? '<a class="btn btn-primary btn-lg" data-focus href="' + esc(PRO.checkoutUrl) + '" target="_blank" rel="noopener">Kup dostęp Pro - ' + esc(PRO.priceLabel) + '</a>' +
         '<p class="muted small" style="margin:8px 0 0">Płatność jednorazowa, bez abonamentu. Kod aktywacyjny dostajesz od razu po zapłacie.</p>'
       : '';
     openModal('<h2>' + esc(CFG.siteName) + ' Pro</h2>' + (reason ? '<p>' + esc(reason) + '</p>' : '') + benefitsHtml() + buy + '<hr class="divider">' + codeFormHtml(),
@@ -117,7 +117,7 @@
     if (!page) return;
     var status = $('[data-pro-status]', page), holder = $('[data-pro-form]', page);
     function paint() {
-      if (!PRO.enabled) { status.textContent = 'Wszystkie funkcje są obecnie dostępne bezpłatnie — kod nie jest potrzebny.'; holder.innerHTML = ''; return; }
+      if (!PRO.enabled) { status.textContent = 'Wszystkie funkcje są obecnie dostępne bezpłatnie - kod nie jest potrzebny.'; holder.innerHTML = ''; return; }
       if (isPro()) { status.textContent = 'Pro jest aktywne w tej przeglądarce.'; status.className = 'form-msg ok'; holder.innerHTML = ''; return; }
       status.textContent = '';
       holder.innerHTML = codeFormHtml();
@@ -198,7 +198,7 @@
       var ta = document.createElement('textarea');
       ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
       document.body.appendChild(ta); ta.select();
-      try { document.execCommand('copy'); toast(okMsg); } catch (e) { toast('Nie udało się skopiować — zaznacz tekst ręcznie.'); }
+      try { document.execCommand('copy'); toast(okMsg); } catch (e) { toast('Nie udało się skopiować - zaznacz tekst ręcznie.'); }
       ta.remove();
     }
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, fallback);
@@ -243,7 +243,7 @@
       ['creditor', 'debtor'].forEach(function (k) { if (s[k]) Object.keys(state[k]).forEach(function (f) { if (typeof s[k][f] === 'string') state[k][f] = s[k][f]; }); });
       if (typeof s.payDays === 'string') state.payDays = s.payDays;
       if (typeof s.docNo === 'string') state.docNo = s.docNo;
-    } catch (e) { /* uszkodzony zapis – start od zera */ }
+    } catch (e) { /* uszkodzony zapis - start od zera */ }
   })();
 
   var saveTimer = null, calcTimer = null, lastRes = null, eurTried = {};
@@ -292,10 +292,10 @@
   function paintRateLabels() {
     var r = E.currentRates(state.calcDate && C.D(state.calcDate) ? state.calcDate : today);
     var labels = {
-      handlowe: 'Transakcje handlowe (firma – firma) — ' + C.fmtRate(r.handlowe) + '%',
-      handlowe_leczniczy: 'Transakcje handlowe, dłużnik: publiczny podmiot leczniczy — ' + C.fmtRate(r.leczniczy) + '%',
-      ustawowe: 'Odsetki ustawowe za opóźnienie (Kodeks cywilny) — ' + C.fmtRate(r.ustawowe) + '%',
-      umowne: 'Odsetki umowne — własna stopa'
+      handlowe: 'Transakcje handlowe (firma - firma) - ' + C.fmtRate(r.handlowe) + '%',
+      handlowe_leczniczy: 'Transakcje handlowe, dłużnik: publiczny podmiot leczniczy - ' + C.fmtRate(r.leczniczy) + '%',
+      ustawowe: 'Odsetki ustawowe za opóźnienie (Kodeks cywilny) - ' + C.fmtRate(r.ustawowe) + '%',
+      umowne: 'Odsetki umowne - własna stopa'
     };
     $all('option', els.type).forEach(function (o) { if (labels[o.value] && r.handlowe != null) o.textContent = labels[o.value]; });
   }
@@ -337,7 +337,7 @@
   });
   els.add.addEventListener('click', function () {
     if (!isPro() && state.invoices.length >= (PRO.freeInvoices || 3)) {
-      openPro('W wersji bezpłatnej policzysz do ' + (PRO.freeInvoices || 3) + ' faktur naraz. Pro zdejmuje limit — rekompensata należy się od każdej zaległej faktury osobno.');
+      openPro('W wersji bezpłatnej policzysz do ' + (PRO.freeInvoices || 3) + ' faktur naraz. Pro zdejmuje limit - rekompensata należy się od każdej zaległej faktury osobno.');
       return;
     }
     var inv = newInvoice();
@@ -417,12 +417,12 @@
   function compLine(c) {
     if (c.pending) {
       var y = +c.key.slice(0, 4), m = +c.key.slice(5, 7), lbd = C.lastBusinessDay(y, m);
-      return '<p class="note">Rekompensata: <strong>' + c.eur + ' EUR</strong> — ' + (lbd > today
+      return '<p class="note">Rekompensata: <strong>' + c.eur + ' EUR</strong> - ' + (lbd > today
         ? 'kurs NBP zostanie ogłoszony ' + C.fmtDate(lbd) + '.'
         : 'pobieram kurs NBP z ' + C.fmtDate(lbd) + '…') + '</p>';
     }
     return '<p class="note">Rekompensata: <strong>' + c.eur + ' EUR × ' + C.fmtMid(c.mid) + ' = ' + zl(c.plnGr) + '</strong><br>kurs średni NBP z ' + C.fmtDate(c.rateDate) +
-      ' (tabela ' + esc(c.tableNo) + ') — ostatni dzień roboczy miesiąca przed wymagalnością (' + C.fmtDate(c.wym) + ').</p>';
+      ' (tabela ' + esc(c.tableNo) + ') - ostatni dzień roboczy miesiąca przed wymagalnością (' + C.fmtDate(c.wym) + ').</p>';
   }
   function renderResult(res) {
     var t = res.totals, html = '';
@@ -435,7 +435,7 @@
     if (!t.count) {
       var anyErr = res.invoices.filter(function (r) { return r.errors && r.errors.length; })[0];
       els.result.innerHTML = anyErr ? '<p class="alert err">' + esc(anyErr.errors[0]) + '</p>'
-        : '<p class="result-empty">Wpisz kwotę faktury i termin płatności — wynik pojawi się tutaj od razu, bez klikania.</p>';
+        : '<p class="result-empty">Wpisz kwotę faktury i termin płatności - wynik pojawi się tutaj od razu, bez klikania.</p>';
       renderUpsell(null); return;
     }
     var allPaid = t.delayed > 0 && t.principalGr === 0;
@@ -458,12 +458,12 @@
       if (r.delayed) {
         html += '<table class="mini"><thead><tr><th>Okres</th><th class="num">Dni</th><th class="num">Kwota</th><th class="num">Stopa</th><th class="num">Odsetki</th></tr></thead><tbody>' +
           r.segments.map(function (s) {
-            return '<tr><td>' + C.fmtDate(s.from) + ' – ' + C.fmtDate(s.to) + '</td><td class="num">' + s.days + '</td><td class="num">' + C.fmtMoney(s.principalGr) +
+            return '<tr><td>' + C.fmtDate(s.from) + ' - ' + C.fmtDate(s.to) + '</td><td class="num">' + s.days + '</td><td class="num">' + C.fmtMoney(s.principalGr) +
               '</td><td class="num">' + C.fmtRate(s.rate) + '%</td><td class="num">' + C.fmtMoney(s.interestGr) + '</td></tr>';
           }).join('') + '</tbody></table>';
         if (r.comp) html += compLine(r.comp);
       } else {
-        html += '<p class="note">' + (r.paidOnTime ? 'Zapłata wpłynęła w terminie — odsetki i rekompensata nie przysługują.' : 'Termin płatności upływa ' + C.fmtDate(r.dueAdjusted) + '. Odsetki zaczną biec od ' + C.fmtDate(r.delayStart) + '.') + '</p>';
+        html += '<p class="note">' + (r.paidOnTime ? 'Zapłata wpłynęła w terminie - odsetki i rekompensata nie przysługują.' : 'Termin płatności upływa ' + C.fmtDate(r.dueAdjusted) + '. Odsetki zaczną biec od ' + C.fmtDate(r.delayStart) + '.') + '</p>';
       }
       r.notes.forEach(function (n) { html += '<p class="note">' + esc(n) + '</p>'; });
       html += '</div></details>';
@@ -501,7 +501,7 @@
           E.setEur(key, { d: last.effectiveDate, mid: last.mid, no: last.no });
           recalc();
         })
-        .catch(function () { /* brak sieci – zostaje komunikat o braku kursu */ });
+        .catch(function () { /* brak sieci - zostaje komunikat o braku kursu */ });
     });
   }
   function recalc() {
@@ -516,7 +516,7 @@
     var html = '', show = !!(res && res.totals && res.totals.delayed > 0);
     if (show && PRO.enabled && !isPro()) {
       html += '<div class="promo pro"><h3>Komplet dokumentów dla tej sprawy</h3><p>Wezwanie do zapłaty masz za darmo. Pro dodaje notę odsetkową i notę obciążeniową na rekompensatę, zdejmuje limit faktur i stopkę serwisu.</p>' +
-        '<button type="button" class="btn btn-primary" data-open-pro>Odblokuj Pro — ' + esc(PRO.priceLabel) + ' jednorazowo</button></div>';
+        '<button type="button" class="btn btn-primary" data-open-pro>Odblokuj Pro - ' + esc(PRO.priceLabel) + ' jednorazowo</button></div>';
     }
     if (show) (CFG.affiliates || []).forEach(function (a) {
       if (!a || !a.url || !a.title) return;
@@ -566,7 +566,7 @@
   function docFoot() {
     if (isPro() && PRO.enabled) return '';
     var host = (CFG.siteUrl || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
-    return '<p class="doc-foot" contenteditable="false">Dokument przygotowano w bezpłatnym kalkulatorze ' + esc(CFG.siteName || '') + (host ? ' — ' + esc(host) : '') + '</p>';
+    return '<p class="doc-foot" contenteditable="false">Dokument przygotowano w bezpłatnym kalkulatorze ' + esc(CFG.siteName || '') + (host ? ' - ' + esc(host) : '') + '</p>';
   }
   function payTerms() {
     var n = parseInt(state.payDays, 10); if (!(n > 0 && n < 366)) n = 7;
@@ -607,7 +607,7 @@
           var r = x.r;
           return '<tr><td>' + (k + 1) + '</td><td>' + docTitle(r, x.i) + '</td><td class="num">' + C.fmtMoney(r.amountGr) + '</td><td>' + C.fmtDate(r.dueAdjusted) + '</td><td class="num">' + C.fmtMoney(r.outstandingGr) +
             '</td><td class="num">' + r.daysLate + '</td><td class="num">' + C.fmtMoney(r.interestGr) + '</td>' +
-            (sumC > 0 ? '<td class="num">' + (r.comp && !r.comp.pending ? C.fmtMoney(r.comp.plnGr) + '<br>(' + r.comp.eur + ' EUR × ' + C.fmtMid(r.comp.mid) + ')' : '—') + '</td>' : '') + '</tr>';
+            (sumC > 0 ? '<td class="num">' + (r.comp && !r.comp.pending ? C.fmtMoney(r.comp.plnGr) + '<br>(' + r.comp.eur + ' EUR × ' + C.fmtMid(r.comp.mid) + ')' : '-') + '</td>' : '') + '</tr>';
         }).join('') +
         '<tr class="sum"><td colspan="4">Razem</td><td class="num">' + C.fmtMoney(sumP) + '</td><td></td><td class="num">' + C.fmtMoney(sumI) + '</td>' + (sumC > 0 ? '<td class="num">' + C.fmtMoney(sumC) + '</td>' : '') + '</tr></tbody></table>';
       html += '<p>Wpłaty proszę dokonać na rachunek bankowy nr <strong>' + account + '</strong>, podając w tytule przelewu numery dokumentów, których dotyczy płatność.</p>';
@@ -622,7 +622,7 @@
       rows.forEach(function (x) {
         x.r.segments.forEach(function (s) {
           n++;
-          body += '<tr><td>' + n + '</td><td>' + docTitle(x.r, x.i) + '</td><td>' + C.fmtDate(x.r.dueAdjusted) + '</td><td class="num">' + C.fmtMoney(s.principalGr) + '</td><td>' + C.fmtDate(s.from) + ' – ' + C.fmtDate(s.to) +
+          body += '<tr><td>' + n + '</td><td>' + docTitle(x.r, x.i) + '</td><td>' + C.fmtDate(x.r.dueAdjusted) + '</td><td class="num">' + C.fmtMoney(s.principalGr) + '</td><td>' + C.fmtDate(s.from) + ' - ' + C.fmtDate(s.to) +
             '</td><td class="num">' + s.days + '</td><td class="num">' + C.fmtRate(s.rate) + '%</td><td class="num">' + C.fmtMoney(s.interestGr) + '</td></tr>';
         });
       });
@@ -637,7 +637,7 @@
       return { title: 'Nota odsetkowa', name: 'nota-odsetkowa', html: html + docSign() + docFoot() };
     }
 
-    // nota obciążeniowa – rekompensata
+    // nota obciążeniowa - rekompensata
     html += '<h1>NOTA OBCIĄŻENIOWA nr ' + ph(state.docNo, 'numer') + '</h1><p class="doc-sub">z dnia ' + C.fmtDateLong(today) + '</p>' +
       '<p>Obciążamy Państwa kwotą <strong>' + zl(sumC) + '</strong> (słownie: ' + C.amountWords(sumC) + ') tytułem rekompensaty za koszty odzyskiwania należności, o której mowa w art. 10 ust. 1 ' + ACT +
       ', w związku z opóźnieniem w zapłacie następujących należności:</p>' +
@@ -645,12 +645,12 @@
       rows.filter(function (x) { return x.r.comp && !x.r.comp.pending; }).map(function (x, k) {
         var c = x.r.comp;
         return '<tr><td>' + (k + 1) + '</td><td>' + docTitle(x.r, x.i) + '</td><td class="num">' + C.fmtMoney(x.r.amountGr) + '</td><td>' + C.fmtDate(x.r.dueAdjusted) + '</td><td>' + C.fmtDate(c.wym) +
-          '</td><td class="num">' + c.eur + ' EUR</td><td>' + C.fmtMid(c.mid) + ' — tabela ' + esc(c.tableNo) + ' z ' + C.fmtDate(c.rateDate) + '</td><td class="num">' + C.fmtMoney(c.plnGr) + '</td></tr>';
+          '</td><td class="num">' + c.eur + ' EUR</td><td>' + C.fmtMid(c.mid) + ' - tabela ' + esc(c.tableNo) + ' z ' + C.fmtDate(c.rateDate) + '</td><td class="num">' + C.fmtMoney(c.plnGr) + '</td></tr>';
       }).join('') + '<tr class="sum"><td colspan="7">Razem do zapłaty</td><td class="num">' + C.fmtMoney(sumC) + '</td></tr></tbody></table>' +
       '<p>Rekompensata przysługuje wierzycielowi bez wezwania, od dnia nabycia uprawnienia do odsetek za opóźnienie. Jej równowartość w złotych ustalono według średniego kursu euro ogłoszonego przez Narodowy Bank Polski ostatniego dnia roboczego miesiąca poprzedzającego miesiąc, w którym świadczenie pieniężne stało się wymagalne (art. 10 ust. 1a ustawy).</p>' +
       '<p>Kwotę prosimy wpłacić w terminie ' + term.text + ' od dnia otrzymania noty na rachunek bankowy nr <strong>' + account + '</strong>.</p>' +
       '<p>Nota obciążeniowa nie jest fakturą. Rekompensata nie stanowi wynagrodzenia za dostawę towarów ani świadczenie usług i nie podlega opodatkowaniu podatkiem VAT.</p>';
-    return { title: 'Nota obciążeniowa — rekompensata', name: 'nota-obciazeniowa-rekompensata', html: html + docSign() + docFoot() };
+    return { title: 'Nota obciążeniowa - rekompensata', name: 'nota-obciazeniowa-rekompensata', html: html + docSign() + docFoot() };
   }
 
   els.docs.addEventListener('click', function (e) {
@@ -665,7 +665,7 @@
         : 'Nota obciążeniowa na rekompensatę jest częścią wersji Pro. Wezwanie do zapłaty z tymi samymi kwotami wygenerujesz bezpłatnie.');
       return;
     }
-    if (kind === 'nota-odsetkowa' && !(t.interestGr > 0)) { toast('Brak odsetek do naliczenia — nota odsetkowa byłaby pusta.'); return; }
+    if (kind === 'nota-odsetkowa' && !(t.interestGr > 0)) { toast('Brak odsetek do naliczenia - nota odsetkowa byłaby pusta.'); return; }
     if (kind === 'nota-rekompensata' && !(t.compGr > 0)) {
       toast(C.TYPES[res.opt.rateType].commercial ? 'Zaznacz opcję doliczania rekompensaty, aby wystawić notę.' : 'Rekompensata przysługuje tylko w transakcjach handlowych (między firmami).');
       return;
