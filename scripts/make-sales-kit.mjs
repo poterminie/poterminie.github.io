@@ -253,31 +253,33 @@ GRAFIKA PRODUKTU
 okladka-pro.png
 
 KRÓTKI OPIS
-Kod odblokowujący pełną wersję kalkulatora ${name}. Komplet dokumentów do odzyskania odsetek i rekompensaty 40, 70 lub 100 euro za faktury zapłacone po terminie.
+Kod do pełnej wersji kalkulatora ${name}. Robi notę odsetkową i notę na rekompensatę 40, 70 lub 100 euro za faktury zapłacone po terminie.
 
 OPIS
-Kontrahent zapłacił fakturę po terminie albo wciąż zalega? Od każdej takiej faktury należą Ci się odsetki za opóźnienie i rekompensata 40, 70 lub 100 euro - z mocy prawa, bez wezwania. ${name} Pro przygotuje dokumenty, którymi odzyskasz te pieniądze.
+Klient zapłacił fakturę po terminie albo nie zapłacił wcale? Należą Ci się odsetki i rekompensata 40, 70 lub 100 euro. Nie musisz mieć tego w umowie.
+
+${name} Pro robi dokumenty, którymi o te pieniądze się upomnisz.
 
 Co dostajesz:
-• Notę odsetkową z tabelą okresów, stawek i dni opóźnienia
-• Notę obciążeniową na rekompensatę 40/70/100 euro - z właściwym kursem NBP i numerem tabeli
-• Dowolną liczbę faktur w jednej sprawie (w wersji bezpłatnej: ${freeInv}) i wklejanie listy prosto z arkusza
-• Eksport dokumentów do Worda (.doc) i dokumenty bez stopki serwisu
+• notę odsetkową z wyliczeniem dni i stawek
+• notę obciążeniową na rekompensatę, z kursem NBP z właściwego dnia
+• dowolną liczbę faktur naraz (za darmo policzysz ${freeInv})
+• zapis dokumentów do Worda
 
 Jak to działa:
-1. Po płatności od razu otrzymujesz plik PDF z kodem aktywacyjnym.
-2. Klikasz link z pliku albo wpisujesz kod na ${host}/pro/
-3. Funkcje Pro włączają się natychmiast w kalkulatorze: ${host}/
+1. Płacisz i od razu dostajesz PDF z kodem.
+2. Klikasz link z PDF-a albo wpisujesz kod na ${host}/pro/
+3. Pro działa od razu w kalkulatorze: ${host}/
 
-Ważne:
-• Płatność jednorazowa, bez abonamentu. Kod działa bezterminowo.
-• Nic nie instalujesz - kalkulator działa w przeglądarce, a wpisane dane nie opuszczają Twojego urządzenia.
-• Stawki odsetek i kursy euro aktualizują się automatycznie na podstawie danych NBP.
-• Kalkulator i wezwanie do zapłaty są bezpłatne - możesz je sprawdzić przed zakupem.
+Dobrze wiedzieć:
+• Płacisz raz, bez abonamentu. Kod się nie przedawnia.
+• Nic nie instalujesz. Kalkulator działa w przeglądarce.
+• Twoje dane zostają na Twoim komputerze.
+• Sam kalkulator i wezwanie do zapłaty są darmowe. Sprawdź je przed zakupem.
 
-Dla kogo: przedsiębiorcy, freelancerzy B2B, biura rachunkowe i działy księgowości, które rozliczają opóźnione płatności.
+Dla firm, freelancerów i biur rachunkowych.
 
-Serwis ma charakter informacyjny i nie stanowi porady prawnej.
+To narzędzie do obliczeń, nie porada prawna.
 
 KATEGORIA / TAGI (jeśli formularz o nie pyta)
 finanse, księgowość, windykacja, faktury, narzędzia dla firm
