@@ -1,0 +1,7 @@
+# wynik budowy – powstaje w GitHub Actions
+dist/
+# sekrety: kod aktywacyjny Pro i wiadomość dla kupujących. NIGDY nie dodawaj do repozytorium.
+private/
+node_modules/
+.claude/
+*.log

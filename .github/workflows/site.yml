@@ -1,0 +1,105 @@
+# Samoobsługa strony: codziennie pobiera dane NBP, testuje obliczenia, przebudowuje i publikuje stronę.
+# Nie wymaga żadnej ręcznej pracy. Jeśli testy nie przejdą, wdrożenie się nie odbywa i działa poprzednia wersja.
+name: Aktualizacja danych i publikacja
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '40 13 * * 1-5'   # dni robocze 13:40 UTC — po publikacji tabeli A przez NBP (ok. 12:15 czasu polskiego)
+    - cron: '10 5 1 * *'      # 1. dnia miesiąca — odświeżenie „bieżącego miesiąca” nawet bez zmian w danych
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: site
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.decide.outputs.deploy }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Pobierz dane NBP
+        run: node scripts/update-data.mjs
+
+      - name: Testy obliczeń
+        run: node tests/calc.test.mjs
+
+      - name: Zapisz zmienione dane w repozytorium
+        id: data
+        run: |
+          if [ -n "$(git status --porcelain data)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data
+            git commit -m "dane: aktualizacja stóp i kursów NBP"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Czy publikować
+        id: decide
+        run: |
+          # Hosting poza GitHub Pages (np. Cloudflare Pages)? Ustaw zmienną repozytorium GH_PAGES=off —
+          # workflow będzie wtedy tylko odświeżał dane, a stronę zbuduje Twój hosting po każdym commicie.
+          if [ "${{ vars.GH_PAGES }}" = "off" ]; then
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" != "schedule" ] || [ "${{ steps.data.outputs.changed }}" = "true" ] || [ "$(date -u +%d)" = "01" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Konfiguracja GitHub Pages
+        id: pages
+        if: steps.decide.outputs.deploy == 'true'
+        uses: actions/configure-pages@v5
+
+      - name: Budowa strony
+        if: steps.decide.outputs.deploy == 'true'
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: node build.mjs
+
+      - name: Paczka dla GitHub Pages
+        if: steps.decide.outputs.deploy == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publikacja
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Zgłoś zmiany wyszukiwarkom (IndexNow)
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          node build.mjs > /dev/null
+          node scripts/indexnow.mjs

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "naffy": {
+      "command": "node",
+      "args": ["mcp/naffy-server.mjs"]
+    }
+  }
+}

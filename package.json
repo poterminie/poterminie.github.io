@@ -1,0 +1,17 @@
+{
+  "name": "poterminie",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kalkulator odsetek za opóźnienie i rekompensaty 40/70/100 euro + generator wezwań do zapłaty. Statyczna strona, zero zależności.",
+  "scripts": {
+    "update": "node scripts/update-data.mjs",
+    "build": "node build.mjs",
+    "test": "node tests/calc.test.mjs",
+    "serve": "node scripts/serve.mjs",
+    "all": "node scripts/update-data.mjs && node tests/calc.test.mjs && node build.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
