@@ -1,9 +1,10 @@
 # Draws the 1200x630 social/share image for the Pro listing. Called by make-sales-kit.mjs.
 # ASCII-only on purpose: every visible text arrives as a parameter.
+# Pass -Badge none to draw the brand without the PRO badge (used for the site's own share image).
 param(
   [Parameter(Mandatory = $true)][string]$Out,
   [string]$Name = 'PoTerminie', [string]$Price = '29 PLN',
-  [string]$L1 = '', [string]$L2 = '', [string]$Sub = '', [string]$Note = ''
+  [string]$Badge = 'PRO', [string]$L1 = '', [string]$L2 = '', [string]$Sub = '', [string]$Note = ''
 )
 Add-Type -AssemblyName System.Drawing
 $W = 1200; $H = 630
@@ -57,10 +58,12 @@ $g.DrawLines($hand, $pts)
 $fBrand = Fnt 40 $true
 $bx = $M + $sz + 18
 $w = Draw $Name $fBrand $white $bx ($M + 6)
-$fBadge = Fnt 24 $true
-$bw = (TextW 'PRO' $fBadge) + 28
-$g.FillPath($yellow, (RoundRect ($bx + $w + 16) ($M + 12) $bw 40 10))
-[void](Draw 'PRO' $fBadge $ink ($bx + $w + 16 + 14) ($M + 16))
+if ($Badge -and $Badge -ne 'none') {
+  $fBadge = Fnt 24 $true
+  $bw = (TextW $Badge $fBadge) + 28
+  $g.FillPath($yellow, (RoundRect ($bx + $w + 16) ($M + 12) $bw 40 10))
+  [void](Draw $Badge $fBadge $ink ($bx + $w + 16 + 14) ($M + 16))
+}
 
 # headline
 $fH = Fnt 84 $true

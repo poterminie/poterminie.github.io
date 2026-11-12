@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Generator statycznej strony. Zero zależności: `node build.mjs` -> katalog dist/.
 // Adres strony: zmienna SITE_URL (ustawia ją GitHub Actions) albo "siteUrl" w site.config.json.
-import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rm, copyFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -146,7 +146,12 @@ ${noindex ? '<meta name="robots" content="noindex">' : (SITE_URL ? `<link rel="c
 <meta property="og:site_name" content="${esc(NAME)}">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
-${SITE_URL ? `<meta property="og:url" content="${abs(p)}">` : ''}
+${SITE_URL ? `<meta property="og:url" content="${abs(p)}">
+<meta property="og:image" content="${abs('/assets/og.png')}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(NAME)} - kalkulator odsetek za opóźnienie i rekompensaty 40 euro">` : ''}
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0a6b4d">
 <link rel="icon" href="${u('/favicon.svg')}" type="image/svg+xml">
 <link rel="stylesheet" href="${u('/assets/style.css')}?v=${assets.style}">
@@ -825,6 +830,7 @@ for (const pg of pages) {
   await writeFile(out, pg.html);
 }
 await writeFile(path.join(DIST, 'favicon.svg'), LOGO.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ').replace(' aria-hidden="true"', ''));
+await copyFile(path.join(ROOT, 'src', 'og.png'), path.join(DIST, 'assets', 'og.png'));
 await writeFile(path.join(DIST, '.nojekyll'), '');
 const indexable = pages.filter((p) => !p.noindex);
 const base = SITE_URL || 'https://example.invalid';
