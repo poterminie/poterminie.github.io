@@ -134,5 +134,21 @@ eq('słownie 0,45', C.amountWords(45), 'zero złotych 45/100');
 eq('data', [C.fmtDate('2026-10-30'), C.fmtDateLong('2026-10-30')], ['30.10.2026', '30 października 2026 r.']);
 eq('termin sprzed 2016 r.', one({ amount: '100', due: '2015-05-01' }).invoices[0].errors.length, 1);
 
+
+/* --- ulga na złe długi --- */
+{
+  const a = C.badDebt({ issue: "2026-02-13", due: "2026-03-15", grossGr: 1230000, paidGr: 0, vatRate: 23 });
+  eq("złe długi: termin w niedzielę przesunięty", [a.due, a.shifted], ["2026-03-16", true]);
+  eq("złe długi: 90. dzień", a.day90, "2026-06-14");
+  eq("złe długi: okres JPK", [a.vatMonth, a.vatQuarter], ["2026-06", "2026-Q2"]);
+  eq("złe długi: terminy VAT i PIT", [a.vatDeadline, a.pitDeadline], ["2029-12-31", "2028-12-31"]);
+  eq("złe długi: VAT i netto", [a.vatGr, a.netGr], [230000, 1000000]);
+  const b = C.badDebt({ issue: "2026-09-02", due: "2026-10-02", grossGr: 1230000, paidGr: 246000, vatRate: 23 });
+  eq("złe długi: 90. dzień na koniec roku", [b.day90, b.vatQuarter], ["2026-12-31", "2026-Q4"]);
+  eq("złe długi: wpłata częściowa", [b.unpaidGr, b.vatGr], [984000, 184000]);
+  const c = C.badDebt({ issue: "2026-09-02", due: "2026-03-15", grossGr: 10800, vatRate: 8, shift: false });
+  eq("złe długi: bez przesunięcia, 8%", [c.due, c.vatGr], ["2026-03-15", 800]);
+}
+
 console.log(`${pass} testów OK${fail ? `, ${fail} BŁĘDÓW` : ''}`);
 process.exit(fail ? 1 : 0);

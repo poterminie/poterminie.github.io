@@ -246,3 +246,17 @@ table.mini td.num, table.mini th.num { text-align: right; }
   body { background: #fff; color: #000; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn { transition: none; } }
+
+/* kalkulator ulgi na złe długi */
+.zd-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 860px) { .zd-grid { grid-template-columns: 5fr 6fr; align-items: start; } }
+.zd-badge { margin: 0 0 12px; padding: 8px 12px; border-radius: 10px; background: var(--warn-soft); color: var(--warn); font-weight: 600; }
+.zd-badge.zd-ok { background: var(--accent-soft); color: var(--accent); }
+.zd-badge.zd-no { background: var(--danger-soft); color: var(--danger); }
+.zd-table { width: 100%; border-collapse: collapse; margin: 0 0 10px; }
+.zd-table th, .zd-table td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.zd-table th { font-weight: 500; color: var(--muted); width: 55%; }
+.zd-table td { font-variant-numeric: tabular-nums; }
+.pack-box { margin: 24px 0; border: 2px solid var(--accent); border-radius: var(--radius); padding: 18px 20px; background: var(--accent-soft); }
+.pack-box h2, .pack-box h3 { margin-top: 0; }
+.pack-box ul { margin: 0 0 14px; }

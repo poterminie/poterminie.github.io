@@ -318,11 +318,29 @@
     };
   }
 
+
+  /* Ulga na złe długi (art. 89a-89b VAT, art. 26i PIT, art. 18f CIT): terminy i kwoty.
+     o: { issue, due, grossGr, paidGr, vatRate, shift } - daty RRRR-MM-DD, kwoty w groszach. */
+  function badDebt(o) {
+    var due = o.shift === false ? o.due : adjustDue(o.due);
+    var day90 = addDays(due, 90);
+    var y = +o.issue.slice(0, 4), m = +day90.slice(5, 7);
+    var unpaid = Math.max(0, (o.grossGr || 0) - (o.paidGr || 0));
+    var r = +o.vatRate || 0;
+    var vatGr = Math.round(unpaid * r / (100 + r));
+    return {
+      due: due, shifted: due !== o.due, day90: day90, firstDay: addDays(day90, 1),
+      vatMonth: day90.slice(0, 7), vatQuarter: day90.slice(0, 4) + "-Q" + Math.ceil(m / 3),
+      vatDeadline: (y + 3) + "-12-31", pitDeadline: (y + 2) + "-12-31",
+      unpaidGr: unpaid, vatGr: vatGr, netGr: unpaid - vatGr
+    };
+  }
+
   root.PTCalc = {
     create: create, TYPES: TYPES, compTier: compTier, MIN_DATE: MIN_DATE,
     D: D, iso: iso, addDays: addDays, diff: diff, weekday: weekday, monthEnd: monthEnd, prevMonthKey: prevMonthKey, nextMonthKey: nextMonthKey,
     todayWarsaw: todayWarsaw, isHoliday: isHoliday, isFreeDay: isFreeDay, isBusinessDay: isBusinessDay, adjustDue: adjustDue,
-    lastBusinessDay: lastBusinessDay, easter: function (y) { return iso(easterDate(y)); },
+    lastBusinessDay: lastBusinessDay, badDebt: badDebt, easter: function (y) { return iso(easterDate(y)); },
     parseAmount: parseAmount, parseRate: parseRate, fmtMoney: fmtMoney, fmtRate: fmtRate, fmtMid: fmtMid, fmtDate: fmtDate, fmtDateLong: fmtDateLong,
     words: words, amountWords: amountWords, plural: plural, pad: pad,
     M_NOM: M_NOM, M_GEN: M_GEN, M_LOC: M_LOC, M_SLUG: M_SLUG, WD: WD

@@ -12,6 +12,10 @@
     "freeInvoices": 3,
     "codeHash": "5f24a6d65da6de03b98db2bf131831ddbe01cf6fa82f10a818ccf34233c3e73e"
   },
+  "pack": {
+    "checkoutUrl": "",
+    "priceLabel": "39 zł"
+  },
   "support": {
     "url": "",
     "label": "Postaw kawę autorowi"

@@ -4,7 +4,7 @@ param(
   [Parameter(Mandatory = $true)][string]$Out,
   [string]$Name = 'PoTerminie', [string]$Price = '29 PLN', [string]$HostName = '',
   [string]$L1 = '', [string]$L2a = '', [string]$L2b = '', [string]$L3 = '',
-  [string]$Items = '', [string]$Sub = ''
+  [string]$Items = '', [string]$Sub = '', [string]$Badge = 'PRO'
 )
 Add-Type -AssemblyName System.Drawing
 $S = 1080
@@ -64,9 +64,9 @@ $fBrand = Fnt 46 $true
 $bx = $M + 76 + 22
 $w = Draw $Name $fBrand $white $bx ($M + 9)
 $fBadge = Fnt 28 $true
-$bw = (TextW 'PRO' $fBadge) + 34
+$bw = (TextW $Badge $fBadge) + 34
 $g.FillPath($yellow, (RoundRect ($bx + $w + 18) ($M + 15) $bw 46 12))
-[void](Draw 'PRO' $fBadge $ink ($bx + $w + 18 + 17) ($M + 20))
+[void](Draw $Badge $fBadge $ink ($bx + $w + 18 + 17) ($M + 20))
 
 # headline
 $fH = Fnt 94 $true

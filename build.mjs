@@ -28,6 +28,23 @@ const NAME = cfg.siteName || 'PoTerminie';
 const PRO_ON = !!(cfg.pro?.checkoutUrl && cfg.pro?.codeHash);
 const PRICE = cfg.pro?.priceLabel || '29 zł';
 const FREE_INV = cfg.pro?.freeInvoices || 3;
+const PACK_ON = !!cfg.pack?.checkoutUrl;
+const PACK_PRICE = cfg.pack?.priceLabel || '39 zł';
+const PACK_ITEMS = [
+  ['Przypomnienie o płatności', 'uprzejme pismo na pierwsze dni po terminie'],
+  ['Przedsądowe wezwanie do zapłaty', 'ostateczne, z odsetkami, rekompensatą i zapowiedzią pozwu'],
+  ['Wezwanie z ostrzeżeniem o wpisie do BIG', 'z elementami wymaganymi przed zgłoszeniem dłużnika do biura informacji gospodarczej'],
+  ['Porozumienie o spłacie zadłużenia w ratach', 'z harmonogramem, uznaniem długu i utratą rat przy zwłoce'],
+  ['Oświadczenie dłużnika o uznaniu długu', 'przerywa bieg przedawnienia'],
+  ['Potwierdzenie salda', 'do uzgodnienia stanu rozrachunków z kontrahentem'],
+  ['Nota odsetkowa', 'wzór do samodzielnego wypełnienia'],
+  ['Nota obciążeniowa na rekompensatę 40/70/100 euro', 'wzór z miejscem na kurs NBP'],
+  ['Poradnik: ścieżka windykacji krok po kroku', 'od przypomnienia do e-sądu, przedawnienie, BIG, ulga na złe długi']
+];
+const packBox = (lead) => PACK_ON ? `<aside class="pack-box"><h3>Wzory pism windykacyjnych w Wordzie</h3>
+<p>${lead} ${PACK_ITEMS.length - 1} gotowych pism do edycji i poradnik, jednorazowo ${esc(PACK_PRICE)}:</p>
+<ul>${PACK_ITEMS.slice(1, 6).map(([t]) => `<li>${t}</li>`).join('')}<li>i więcej</li></ul>
+${link('/wzory-pism/', 'Zobacz, co zawiera pakiet', ' class="btn btn-primary"')}</aside>` : '';
 const ACT = 'ustawy z dnia 8 marca 2013 r. o przeciwdziałaniu nadmiernym opóźnieniom w transakcjach handlowych';
 
 /* ---------- pomocnicze ---------- */
@@ -91,10 +108,11 @@ const files = {
   'assets/calc.js': await readFile(path.join(ROOT, 'src/calc.js'), 'utf8'),
   'assets/app.js': await readFile(path.join(ROOT, 'src/app.js'), 'utf8'),
   'assets/style.css': await readFile(path.join(ROOT, 'src/style.css'), 'utf8'),
+  'assets/zle-dlugi.js': await readFile(path.join(ROOT, 'src/zle-dlugi.js'), 'utf8'),
   'assets/data.js': `window.PT_DATA=${JSON.stringify({ ref, eur, updated: meta.updated })};\nwindow.PT_CFG=${JSON.stringify(publicCfg)};\n`
 };
 assets.calc = hash(files['assets/calc.js']); assets.app = hash(files['assets/app.js']);
-assets.style = hash(files['assets/style.css']); assets.data = hash(files['assets/data.js']);
+assets.style = hash(files['assets/style.css']); assets['zle-dlugi'] = hash(files['assets/zle-dlugi.js']); assets.data = hash(files['assets/data.js']);
 
 /* ---------- układ strony ---------- */
 const NAV = [
@@ -127,12 +145,13 @@ function crumbsLd(crumbs) {
   };
 }
 
-function page({ path: p, title, desc, body, tool = false, appJs = false, jsonld = [], crumbs = [], noindex = false, navKey = null, file = null }) {
+function page({ path: p, title, desc, body, tool = false, appJs = false, jsonld = [], crumbs = [], noindex = false, navKey = null, file = null, js = [] }) {
   const ld = [...jsonld, crumbsLd(crumbs)].filter(Boolean);
   const nav = NAV.map(([np, t]) => `<a href="${u(np)}"${(navKey ?? p) === np ? ' aria-current="page"' : ''}>${t}</a>`).join('') +
     (PRO_ON ? `<a class="nav-pro" href="${u('/pro/')}"${p === '/pro/' ? ' aria-current="page"' : ''}>Pro</a>` : '');
   const scripts = tool || appJs
-    ? `<script src="${u('/assets/calc.js')}?v=${assets.calc}" defer></script>\n<script src="${u('/assets/data.js')}?v=${assets.data}" defer></script>\n<script src="${u('/assets/app.js')}?v=${assets.app}" defer></script>` : '';
+    ? `<script src="${u('/assets/calc.js')}?v=${assets.calc}" defer></script>\n<script src="${u('/assets/data.js')}?v=${assets.data}" defer></script>\n<script src="${u('/assets/app.js')}?v=${assets.app}" defer></script>` : js.length
+    ? [`<script src="${u('/assets/calc.js')}?v=${assets.calc}" defer></script>`, ...js.map((n) => `<script src="${u(`/assets/${n}.js`)}?v=${assets[n]}" defer></script>`)].join('\n') : '';
   const html = `<!doctype html>
 <html lang="pl">
 <head>
@@ -174,6 +193,8 @@ ${body}
 <li>${link('/wezwanie-do-zaplaty/', 'Generator wezwania do zapłaty')}</li>
 <li>${link('/nota-odsetkowa/', 'Nota odsetkowa')}</li>
 <li>${link('/nota-obciazeniowa-rekompensata/', 'Nota obciążeniowa - rekompensata')}</li>
+<li>${link('/ulga-na-zle-dlugi/', 'Kalkulator ulgi na złe długi')}</li>
+${PACK_ON ? `<li>${link('/wzory-pism/', 'Wzory pism windykacyjnych')}</li>` : ''}
 </ul></div>
 <div><h2>Aktualne stawki</h2><ul>
 <li>${link(curMonth.path, `Rekompensata 40 euro - ${curMonth.name}`)}</li>
@@ -621,6 +642,7 @@ ${f.html}
 <p>Generator wypełnia wszystkie te elementy automatycznie. Pola, których nie uzupełnisz w formularzu, zostaną w dokumencie zaznaczone na żółto - możesz je wpisać bezpośrednio w podglądzie.</p>
 <h2>Dlaczego warto doliczyć odsetki i rekompensatę</h2>
 <p>Bo zwykle podwajają motywację dłużnika. Samo wezwanie „proszę zapłacić fakturę” nic go nie kosztuje. Wezwanie, w którym do faktury na 3&nbsp;000 zł doliczono ${zl(curMonth.p40)} rekompensaty i odsetki rosnące o ${zl(interest(300000, now.handlowe, 1))} dziennie, pokazuje, że zwłoka ma cenę. A rekompensata należy się nawet wtedy, gdy po wezwaniu faktura zostanie zapłacona.</p>
+${packBox('Dłużnik nadal milczy? Kolejne kroki masz gotowe:')}
 <h2>Najczęstsze pytania</h2>
 ${f.html}
 </div></section>`
@@ -651,6 +673,7 @@ page({
 </ul>
 <h2>Kiedy wystawić notę</h2>
 <p>Najczęściej po zapłacie faktury - wtedy znana jest ostateczna liczba dni opóźnienia. Przy długich zaległościach notę można wystawić na konkretny dzień, a dalsze odsetki doliczyć później. Do noty odsetkowej warto dołączyć ${link('/nota-obciazeniowa-rekompensata/', 'notę obciążeniową na rekompensatę 40, 70 lub 100 euro')}.</p>
+${packBox('Potrzebujesz kolejnych pism?')}
 <h2>Księgowanie</h2>
 <p>U wierzyciela odsetki za opóźnienie są przychodem podatkowym dopiero w momencie ich otrzymania. Samo wystawienie noty nie powoduje powstania przychodu.</p>
 </div></section>`
@@ -680,6 +703,89 @@ page({
 <p>W ${curMonth.loc} obowiązuje kurs ${C.fmtMid(curMonth.rate.mid)} z ${C.fmtDate(curMonth.rate.d)}: 40 euro = ${zl(curMonth.p40)}, 70 euro = ${zl(curMonth.p70)}, 100 euro = ${zl(curMonth.p100)}. Kursy dla innych miesięcy znajdziesz w zestawieniu ${link('/rekompensata-40-euro/', 'Rekompensata 40 euro')}.</p>
 <h2>Jedna nota na kilka faktur</h2>
 <p>Rekompensata przysługuje od każdej transakcji osobno, ale można ją ująć w jednej nocie zbiorczej - z osobnym wierszem dla każdej faktury, bo kursy i progi mogą się różnić. Tak właśnie przygotowuje ją generator.</p>
+</div></section>`
+});
+
+/* ---- ulga na złe długi ---- */
+{
+  const ex = C.badDebt({ issue: `${YEAR}-01-15`, due: `${YEAR}-02-14`, grossGr: 1230000, paidGr: 0, vatRate: 23 });
+  const f = faq([
+    ['Od kiedy liczyć 90 dni?', `<p>Od dnia następującego po terminie płatności wskazanym na fakturze lub w umowie. Jeśli termin wypadł w sobotę albo dzień wolny, w praktyce przyjmuje się najbliższy dzień roboczy (art. 115 Kodeksu cywilnego) - kalkulator robi to automatycznie, ale opcję można wyłączyć. Przykład: termin ${C.fmtDate(ex.due)}, 90. dzień przypada ${C.fmtDate(ex.day90)}.</p>`],
+    ['W którym JPK_V7 zrobić korektę VAT?', '<p>Najwcześniej w rozliczeniu za okres (miesiąc albo kwartał), w którym upłynął 90. dzień od terminu płatności. Można też zrobić ją później, byle przed upływem 3 lat od końca roku, w którym wystawiono fakturę.</p>'],
+    ['Czy dłużnik też musi coś zrobić?', '<p>Tak. Jeśli nie zapłaci w ciągu 90 dni od terminu, musi skorygować odliczony VAT w rozliczeniu za okres, w którym upłynął 90. dzień, a w PIT lub CIT zwiększyć podstawę opodatkowania. Po zapłacie robi korektę w drugą stronę.</p>'],
+    ['Co jeśli dłużnik zapłaci po skorzystaniu z ulgi?', '<p>Wierzyciel musi wtedy zwiększyć podstawę opodatkowania i podatek należny (albo dochód w PIT/CIT) w rozliczeniu za okres, w którym otrzymał zapłatę. Przy zapłacie częściowej - w proporcji do zapłaconej kwoty.</p>'],
+    ['Czy ulga przysługuje przy sprzedaży konsumentowi?', '<p>W PIT i CIT nie - dotyczy tylko transakcji handlowych między przedsiębiorcami. W VAT zakres przepisów zmieniał się kilka razy, dlatego przy sprzedaży osobom prywatnym sprawdź aktualne stanowisko z księgowym.</p>']
+  ]);
+  page({
+    path: '/ulga-na-zle-dlugi/', js: ['zle-dlugi'],
+    title: `Ulga na złe długi ${YEAR} - kalkulator terminów i kwoty VAT`,
+    desc: 'Policz, kiedy mija 90 dni od terminu płatności, w którym JPK_V7 możesz skorygować VAT od niezapłaconej faktury, ile odzyskasz i do kiedy masz czas. Także PIT i CIT.',
+    crumbs: [['/ulga-na-zle-dlugi/', 'Ulga na złe długi']], jsonld: [f.ld],
+    body: `<section class="hero"><div class="wrap">
+<h1>Ulga na złe długi - kalkulator</h1>
+<p class="lead">Klient nie zapłacił faktury, a VAT już oddałeś do urzędu? Po 90 dniach od terminu płatności możesz go odzyskać. Wpisz daty i kwotę, a kalkulator pokaże, w którym rozliczeniu zrobić korektę i ile pieniędzy wróci.</p>
+</div></section>
+<div class="wrap"><section class="tool zd-grid" id="zd-tool" aria-label="Kalkulator ulgi na złe długi">
+<form class="card" autocomplete="off" novalidate onsubmit="return false">
+<label class="field"><span>Data wystawienia faktury</span><input type="date" id="zd-issue" min="2016-01-01" max="2099-12-31"></label>
+<label class="field"><span>Termin płatności</span><input type="date" id="zd-due" min="2016-01-01" max="2099-12-31"></label>
+<label class="field"><span>Kwota brutto faktury <small>zł</small></span><input type="text" inputmode="decimal" id="zd-gross" placeholder="np. 12 300,00" maxlength="20"></label>
+<label class="field"><span>Zapłacono częściowo <small>zł, opcjonalnie</small></span><input type="text" inputmode="decimal" id="zd-paid" placeholder="0,00" maxlength="20"></label>
+<label class="field"><span>Stawka VAT</span><select id="zd-rate"><option value="23">23%</option><option value="8">8%</option><option value="5">5%</option></select></label>
+<label class="check"><input type="checkbox" id="zd-115" checked><span>Termin wypadający w sobotę lub dzień wolny przesuń na najbliższy dzień roboczy (art. 115 KC)</span></label>
+</form>
+<div class="card" id="zd-out" aria-live="polite"><p class="result-empty">Podaj datę wystawienia, termin płatności i kwotę brutto - wynik pojawi się od razu.</p></div>
+</section></div>
+<section class="prose"><div class="wrap narrow">
+<h2>Na czym polega ulga na złe długi</h2>
+<p>VAT od sprzedaży płacisz w momencie wystawienia faktury, niezależnie od tego, czy klient zapłaci. Ulga na złe długi pozwala ten podatek odzyskać, gdy należność nie wpłynęła w ciągu 90 dni od terminu płatności. Działa też w podatku dochodowym: zmniejszasz podstawę opodatkowania o niezapłaconą kwotę netto, więc nie płacisz PIT ani CIT od pieniędzy, których nie dostałeś.</p>
+<h2>Warunki w VAT (art. 89a ustawy o VAT)</h2>
+<ul>
+<li>od terminu płatności minęło 90 dni, a należność nie została zapłacona ani sprzedana (np. firmie windykacyjnej),</li>
+<li>nie minęły 3 lata, licząc od końca roku, w którym wystawiono fakturę,</li>
+<li>w dniu poprzedzającym złożenie korekty dłużnik nie jest w trakcie postępowania restrukturyzacyjnego, upadłościowego ani likwidacji,</li>
+<li>wierzyciel jest wtedy czynnym podatnikiem VAT.</li>
+</ul>
+<p>Korektę wykazujesz w pliku JPK_V7 za okres, w którym upłynął 90. dzień, albo w jednym z późniejszych - zmniejszasz podstawę opodatkowania i podatek należny. Faktury nie trzeba korygować, a korekty nie wysyła się do KSeF.</p>
+<h2>Warunki w PIT i CIT</h2>
+<ul>
+<li>sprzedaż to transakcja handlowa między przedsiębiorcami,</li>
+<li>od terminu płatności minęło 90 dni,</li>
+<li>nie minęły 2 lata, licząc od końca roku, w którym wystawiono fakturę,</li>
+<li>do dnia złożenia zeznania należność nie została zapłacona ani sprzedana.</li>
+</ul>
+<p>Ulgę można uwzględnić już w zaliczce za miesiąc lub kwartał, w którym upłynął 90. dzień, a rozlicza się ją w zeznaniu rocznym.</p>
+<h2>Zanim skorzystasz z ulgi, spróbuj odzyskać pieniądze</h2>
+<p>Ulga zwraca tylko podatek. Całą kwotę faktury z odsetkami i ${link(curMonth.path, `rekompensatą 40 euro (${zl(curMonth.p40)})`)} odzyskasz dopiero od dłużnika. Zacznij od ${link('/wezwanie-do-zaplaty/', 'wezwania do zapłaty')} - generator sam doliczy odsetki i rekompensatę.</p>
+${packBox('Windykacja przed ulgą:')}
+<h2>Najczęstsze pytania</h2>
+${f.html}
+<p class="small muted">Opis ma charakter informacyjny i nie jest poradą podatkową. Przepisy o uldze na złe długi zmieniały się kilka razy, dlatego przed korektą potwierdź swoją sytuację z księgowym.</p>
+</div></section>`
+  });
+}
+
+/* ---- wzory pism (pakiet sprzedawany jako plik) ---- */
+page({
+  path: '/wzory-pism/', noindex: !PACK_ON,
+  title: `Wzory pism windykacyjnych w Wordzie - pakiet ${YEAR}`,
+  desc: `Pakiet ${PACK_ITEMS.length - 1} wzorów pism windykacyjnych do edycji w Wordzie: wezwanie przedsądowe, wezwanie przed wpisem do BIG, ugoda ratalna, uznanie długu, noty. Jednorazowo ${PACK_PRICE}.`,
+  crumbs: [['/wzory-pism/', 'Wzory pism']],
+  body: `<section class="hero"><div class="wrap narrow">
+<h1>Wzory pism windykacyjnych w Wordzie</h1>
+<p class="lead">Komplet pism na każdy etap odzyskiwania należności - od uprzejmego przypomnienia po ugodę ratalną. Pliki .docx otworzysz w Wordzie, LibreOffice lub Google Docs. Miejsca do uzupełnienia są zaznaczone na żółto.</p>
+</div></section>
+<section class="prose"><div class="wrap narrow">
+<div class="card">
+<ol>${PACK_ITEMS.map(([t, d]) => `<li><strong>${t}</strong> - ${d}</li>`).join('')}</ol>
+${PACK_ON ? `<a class="btn btn-primary btn-lg" href="${esc(cfg.pack.checkoutUrl)}" target="_blank" rel="noopener">Kup pakiet - ${esc(PACK_PRICE)}</a>
+<p class="small muted" style="margin:10px 0 0">Płatność BLIK lub kartą. Plik ZIP przychodzi na e-mail od razu po zakupie.</p>` : '<p>Pakiet jest chwilowo niedostępny.</p>'}
+</div>
+<h2>Dla kogo</h2>
+<p>Dla firm i freelancerów, którym klient nie płaci faktur, i dla biur rachunkowych, które pomagają w tym klientom. Pisma są napisane prostym językiem, z podstawami prawnymi tam, gdzie mają znaczenie: odsetki i rekompensata z ${ACT}, uznanie długu przerywające przedawnienie (art. 123 Kodeksu cywilnego), wezwanie spełniające warunki ustawy o udostępnianiu informacji gospodarczych.</p>
+<h2>Czym różni się od darmowego generatora</h2>
+<p>${link('/wezwanie-do-zaplaty/', 'Generator wezwania')} na tej stronie robi jedno pismo z wyliczonymi kwotami. Pakiet obejmuje kolejne kroki, gdy wezwanie nie wystarczy: ostrzeżenie przed BIG, porozumienie ratalne, uznanie długu, potwierdzenie salda. Dostajesz edytowalne pliki, które zapiszesz jako własne szablony.</p>
+<p class="small muted">Wzory mają charakter pomocniczy i nie zastępują porady prawnej. Treść cyfrowa dostarczana natychmiast po zakupie.</p>
 </div></section>`
 });
 
@@ -846,6 +952,7 @@ if (!cfg.owner?.name || !cfg.owner?.email) todo.push('owner.name i owner.email -
 if (!PRO_ON && !cfg.support?.url && !(cfg.affiliates || []).length) todo.push('ŻADNE źródło przychodu nie jest podłączone (pro.checkoutUrl / support.url / affiliates)');
 else {
   if (!PRO_ON) todo.push('pro.checkoutUrl - sprzedaż Pro wyłączona, wszystkie funkcje są darmowe');
+  if (!PACK_ON) todo.push('pack.checkoutUrl - pakiet wzorów pism ukryty (wklej link produktu z Naffy)');
   if (!cfg.support?.url) todo.push('support.url - brak przycisku wsparcia');
 }
 if (!cfg.verification?.google) todo.push('verification.google - strona niezgłoszona w Google Search Console');
