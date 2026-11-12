@@ -5,3 +5,7 @@ private/
 node_modules/
 .claude/
 *.log
+
+# sekrety użytkownika - nigdy do repo
+*backup_code*
+*.secret.txt
